@@ -1,4 +1,8 @@
-from order_payment_exercise import orders, payment_details, users
+from fundamental_of_programming.exercise_one.order_payment_exercise import (
+    orders,
+    payment_details,
+    users,
+)
 
 
 def find_user_by_id(user_id):
