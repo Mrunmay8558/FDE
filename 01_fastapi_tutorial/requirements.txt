@@ -1,0 +1,28 @@
+# FastAPI is the web API framework used to create HTTP endpoints and handle requests/responses.
+fastapi>=0.129.0
+
+# Uvicorn is the ASGI server that runs the FastAPI app; [standard] adds common performance and WebSocket extras.
+uvicorn[standard]==0.39.0
+
+# Starlette is the lightweight ASGI toolkit underneath FastAPI for routing, middleware, and request/response handling.
+starlette>=0.40.0
+
+# HTTPX is an HTTP client used to call external APIs from Python, with support for async API requests.
+httpx==0.28.1
+
+# Pydantic validates request/response data and defines typed models used by FastAPI.
+pydantic==2.11.7
+
+# Cryptography provides low-level encryption, signing, hashing, and key-handling utilities.
+cryptography==45.0.4
+
+# PyJWT creates and verifies JSON Web Tokens, commonly used for API authentication.
+PyJWT>=2.1.0
+
+# Passlib provides password hashing helpers; the bcrypt extra enables bcrypt-based password hashes.
+passlib[bcrypt]==1.7.4
+
+# Bcrypt is the hashing algorithm package used by Passlib for securely storing passwords.
+bcrypt==4.0.1
+
+python-dotenv==1.1.1
