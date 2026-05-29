@@ -1,7 +1,7 @@
 from odmantic import Model, Field
 from typing import Optional
 from datetime import datetime, timezone
-from pydantic import EmailStr, ConfigDict
+from pydantic import EmailStr, ConfigDict, BaseModel
 from enum import Enum
 
 
@@ -19,6 +19,24 @@ class UserRole(str, Enum):
     STAFF = "STAFF"
     USER = "USER"
     DOCTOR = "DOCTOR"
+
+
+class UserAddress(BaseModel):
+    """Represents a user's address information.
+
+    Attributes:
+        street: Street address (e.g., "123 Main St").
+        city: City name (e.g., "Springfield").
+        state: State or province (e.g., "IL").
+        postal_code: Postal or ZIP code (e.g., "62704").
+        country: Country name (e.g., "USA").
+    """
+
+    street: str = Field(..., description="Street address")
+    city: str = Field(..., description="City name")
+    state: str = Field(..., description="State or province")
+    postal_code: str = Field(..., description="Postal or ZIP code")
+    country: str = Field(..., description="Country name")
 
 
 class User(Model):
@@ -45,6 +63,9 @@ class User(Model):
     email: EmailStr = Field(..., description="User's email address", unique=True)
     password: str = Field(..., description="Hashed password")
     mobile_number: str = Field(..., description="User's mobile phone number")
+    user_address: Optional[UserAddress] = Field(
+        None, description="User's address information"
+    )
     user_role: UserRole = Field(
         default=UserRole.USER, description="Role of the user in the system"
     )

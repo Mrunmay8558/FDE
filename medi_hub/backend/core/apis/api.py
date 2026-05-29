@@ -2,6 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.openapi.utils import get_openapi
 from fastapi import Response
+from core.apis.routes.auth_router import auth_router
 
 # Step 1:
 # Create the FastAPI application object.
@@ -81,8 +82,7 @@ app.add_middleware(
 
 # Step 7:
 # Register feature routers with tags so endpoints are grouped clearly in Swagger/ReDoc.
-# app.include_router(auth_router, tags=["Authentication"])
-#
+app.include_router(auth_router, tags=["Authentication"])
 
 
 @app.get("/")
