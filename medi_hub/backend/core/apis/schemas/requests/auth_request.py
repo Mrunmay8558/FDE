@@ -69,3 +69,51 @@ class UserLoginRequest(BaseModel):
 
     email: EmailStr = Field(..., description="User's email address")
     password: str = Field(..., description="Plaintext password for authentication")
+
+
+class UserResetPasswordRequest(BaseModel):
+    """Represents the data required for a user to reset their password.
+
+    Attributes:
+        old_password: The current plaintext password for authentication.
+        new_password: The new plaintext password that the user wants to set.
+    """
+
+    old_password: str = Field(
+        ..., description="Current plaintext password for authentication"
+    )
+    new_password: str = Field(..., description="New plaintext password for the user")
+
+
+class UserUpdateRequest(BaseModel):
+    """Represents the data that can be updated for an existing user.
+
+    Attributes:
+        first_name: User's given name.
+        last_name: User's family name.
+        mobile_number: User's primary contact phone number.
+        user_address: Optional address information for the user.
+    """
+
+    first_name: Optional[str] = Field(None, description="User's first name")
+    last_name: Optional[str] = Field(None, description="User's last name")
+    mobile_number: Optional[str] = Field(None, description="User's mobile phone number")
+    user_address: Optional[UserAddress] = Field(
+        None, description="User's address information"
+    )
+    user_metdata: Optional[dict] = Field(
+        None,
+        description="Additional metadata about the user (e.g., preferences, settings)",
+    )
+    user_role: Optional[UserRole] = Field(
+        None,
+        description="Role of the user in the system (e.g., ADMIN, STAFF, USER, DOCTOR)",
+    )
+    password: Optional[str] = Field(
+        None,
+        description="Plaintext password for the user (will be hashed before storage)",
+    )
+    updated_at: datetime = Field(
+        default_factory=lambda: datetime.now(timezone.utc),
+        description="Timestamp when the user record was last updated",
+    )

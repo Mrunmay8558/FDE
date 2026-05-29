@@ -130,3 +130,51 @@ class AuthController:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=str(error),
             )
+
+    async def reset_password(self, request: dict, authenticated_user_details: dict):
+        """
+        Handle user password reset.
+
+        Args:
+            request: A dictionary containing old_password and new_password.
+            authenticated_user_details: A dictionary containing details of the authenticated user (e.g., user ID).
+
+        Returns:
+            A success message if password reset is successful.
+
+        Raises:
+            HTTPException with status code 401 if authentication fails.
+            HTTPException with status code 500 for any unexpected errors.
+        """
+        try:
+            logging.info(f"Executing AuthController.reset_password function")
+            user_id = authenticated_user_details.get("id")
+            user = await self.crud_auth.get(id=user_id)
+            if not user:
+                logging.warning(f"User with ID {user_id} not found for password reset")
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND,
+                    detail="User not found",
+                )
+            if not verify_password(request.get("old_password", ""), user.password):
+                logging.warning(
+                    f"Authentication failed for user ID {user_id} during password reset"
+                )
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid current password",
+                )
+            new_hashed_password = encrypt_password(request.get("new_password", ""))
+            update_data = {"password": new_hashed_password}
+            await self.crud_auth.update(id=user_id, obj_in=update_data)
+            logging.info(f"Password reset successful for user ID {user_id}")
+            return {"message": "Password reset successful"}
+
+        except HTTPException:
+            raise
+        except Exception as error:
+            logging.error(f"Error in AuthController.reset_password function: {error}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=str(error),
+            )
