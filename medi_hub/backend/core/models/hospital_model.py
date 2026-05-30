@@ -3,6 +3,25 @@ from typing import Optional
 from datetime import datetime, timezone
 from pydantic import EmailStr, ConfigDict
 from enum import Enum
+from pydantic import BaseModel
+
+
+class HosptialAddress(BaseModel):
+    """Represents a user's address information.
+
+    Attributes:
+        street: Street address (e.g., "123 Main St").
+        city: City name (e.g., "Springfield").
+        state: State or province (e.g., "IL").
+        postal_code: Postal or ZIP code (e.g., "62704").
+        country: Country name (e.g., "USA").
+    """
+
+    street: str = Field(..., description="Street address")
+    city: str = Field(..., description="City name")
+    state: str = Field(..., description="State or province")
+    postal_code: str = Field(..., description="Postal or ZIP code")
+    country: str = Field(..., description="Country name")
 
 
 class Hospital(Model):
@@ -30,7 +49,7 @@ class Hospital(Model):
     """
 
     hospital_name: str = Field(..., description="Name of the hospital")
-    hospital_address: str = Field(..., description="Address of the hospital")
+    hospital_address: HosptialAddress = Field(..., description="Address of the hospital")
     hospital_email: EmailStr = Field(..., description="Contact email for the hospital")
     hospital_phone: str = Field(
         ..., description="Contact phone number for the hospital"
