@@ -16,6 +16,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 JWT_SECRET = os.environ.get("secret")
 JWT_ALGORITHM = os.environ.get("algorithm", "HS256")
+OTP_SECRET = os.environ.get("otp_secret", JWT_SECRET or "medi-hub-otp-secret")
 
 
 def signJWT(user_role: str, id: str, expiry_duration: int = 3600) -> str:
@@ -71,3 +72,19 @@ def encrypt_password(password: str) -> str:
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     """Verify a plain-text password against a bcrypt hash."""
     return pwd_context.verify(plain_password, hashed_password)
+
+
+def generate_otp(length: int = 6) -> str:
+    """Generate a numeric OTP with the requested number of digits."""
+    return "".join(secrets.choice("0123456789") for _ in range(length))
+
+
+def hash_otp(otp: str) -> str:
+    """Hash an OTP before persisting it to storage."""
+    payload = f"{otp}:{OTP_SECRET}".encode("utf-8")
+    return hashlib.sha256(payload).hexdigest()
+
+
+def verify_hashed_otp(plain_otp: str, hashed_otp: str) -> bool:
+    """Compare a plain OTP against its hashed representation."""
+    return secrets.compare_digest(hash_otp(plain_otp), hashed_otp)

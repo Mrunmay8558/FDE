@@ -1,8 +1,11 @@
-from odmantic import Model, Field
-from typing import Optional
 from datetime import datetime, timezone
-from pydantic import EmailStr, ConfigDict, BaseModel
 from enum import Enum
+from typing import Optional
+
+from odmantic import Field, Model
+from pydantic import BaseModel, ConfigDict, EmailStr
+
+from core.apis.schemas.requests.auth_request import OtpPurpose
 
 
 class UserRole(str, Enum):
@@ -37,6 +40,27 @@ class UserAddress(BaseModel):
     state: str = Field(..., description="State or province")
     postal_code: str = Field(..., description="Postal or ZIP code")
     country: str = Field(..., description="Country name")
+
+
+class UserOtp(BaseModel):
+    """Represents OTP state stored for a user."""
+
+    code_hash: str = Field(..., description="Hashed active OTP")
+    purpose: OtpPurpose = Field(..., description="Purpose for the active OTP")
+    expires_at: datetime = Field(..., description="Timestamp when the OTP expires")
+    requested_at: datetime = Field(
+        ..., description="Timestamp when the OTP was last requested"
+    )
+    attempt_count: int = Field(
+        default=0,
+        ge=0,
+        le=5,
+        description="Number of failed OTP verification attempts in the active window",
+    )
+    attempt_window_started_at: datetime = Field(
+        ...,
+        description="Timestamp when the current OTP attempt window started",
+    )
 
 
 class User(Model):
@@ -80,6 +104,10 @@ class User(Model):
     updated_at: datetime = Field(
         default_factory=lambda: datetime.now(timezone.utc),
         description="Timestamp when the user was last updated",
+    )
+    otp: Optional[UserOtp] = Field(
+        None,
+        description="Active OTP state for authentication and password reset flows",
     )
 
     model_config = ConfigDict(

@@ -20,6 +20,13 @@ class UserRole(str, Enum):
     DOCTOR = "DOCTOR"
 
 
+class OtpPurpose(str, Enum):
+    """Supported OTP use-cases for authentication flows."""
+
+    LOGIN = "LOGIN"
+    FORGOT_PASSWORD = "FORGOT_PASSWORD"
+
+
 class UserAddress(BaseModel):
     """Represents a user's address information.
 
@@ -69,6 +76,25 @@ class UserLoginRequest(BaseModel):
 
     email: EmailStr = Field(..., description="User's email address")
     password: str = Field(..., description="Plaintext password for authentication")
+
+
+class RequestOtpRequest(BaseModel):
+    """Request payload for generating and emailing an OTP."""
+
+    email: EmailStr = Field(..., description="User's email address")
+    purpose: OtpPurpose = Field(..., description="The reason OTP is being requested")
+
+
+class VerifyOtpRequest(BaseModel):
+    """Request payload for verifying an OTP across supported auth flows."""
+
+    email: EmailStr = Field(..., description="User's email address")
+    otp: str = Field(..., min_length=6, max_length=6, description="6-digit OTP")
+    purpose: OtpPurpose = Field(..., description="The reason OTP is being verified")
+    new_password: Optional[str] = Field(
+        None,
+        description="New plaintext password; required for forgot-password flow",
+    )
 
 
 class UserResetPasswordRequest(BaseModel):
